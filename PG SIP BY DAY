@@ -1,0 +1,2 @@
+index="policyguru_data" resourceId="sip*" 
+| timechart span=1d count
