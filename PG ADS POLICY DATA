@@ -1,9 +1,11 @@
 index="policyguru_data" resourceId="enum*" disposition.disposition="*"
 | head 1
 | table _time source sourcetype guid timestamp timestampStr 
+id
 resourceId 
 disposition.disposition
 disposition.dispositionEnum	
 | rename
 disposition.disposition as disposition
 disposition.dispositionEnum as disposition_enum
+id as policyrule
