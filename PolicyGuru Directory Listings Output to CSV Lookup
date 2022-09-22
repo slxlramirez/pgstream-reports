@@ -1,0 +1,15 @@
+| dbxquery
+connection=policy_guru_db
+query="
+SELECT number,
+       array_to_string(array_agg(listname), ',') as lists
+FROM
+(
+SELECT g.name as listname, l.value as number
+FROM master.listinggroup g INNER JOIN master.listing l ON l.listinggroupid = g.id
+) a
+GROUP BY number
+"
+shortnames=t
+| table number lists
+| outputlookup pg_directory_listings.csv
