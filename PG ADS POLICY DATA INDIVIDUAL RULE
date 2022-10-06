@@ -1,0 +1,5 @@
+index="policyguru_data" resourceId="enum*" disposition.disposition="*"
+| head 1
+| table _time guid id resourceId disposition.disposition disposition.dispositionEnum	
+| rename disposition.disposition as disposition disposition.dispositionEnum as disposition_enum id as policyrule
+| search policyrule = "noguid_allow_case"
