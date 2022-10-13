@@ -1,5 +1,4 @@
 index="policyguru_data" resourceId="enum*" 
-| rename disposition.dispositionEnum as disposition
 | stats values(*) as * by guid
 | rex field=meta "direction:(?<direction>.*)"
 | search direction="INBOUND"
