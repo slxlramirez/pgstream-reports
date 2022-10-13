@@ -1,9 +1,6 @@
 index="policyguru_data" resourceId="enum*" 
-| table *
-| sort guid
 | rename disposition.dispositionEnum as disposition
 | stats values(*) as * by guid
-| sort guid
 | rex field=meta "direction:(?<direction>.*)"
 | search direction="INBOUND"
 | eval timestamp = mvindex(timestamp, 0)
