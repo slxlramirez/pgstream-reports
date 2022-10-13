@@ -1,0 +1,32 @@
+index="policyguru_data" resourceId="enum*" 
+| table *
+| sort guid
+| rename disposition.dispositionEnum as disposition
+| stats values(*) as * by guid
+| sort guid
+| rex field=meta "direction:(?<direction>.*)"
+| search direction="INBOUND"
+| eval timestamp = mvindex(timestamp, 0)
+| eval _time=(timestamp/1000)
+| rename disposition.disposition as disposition 
+id as policyrule 
+modalities{}.modality as calltype 
+connections{}.left.facets{}.country as sourcecountry
+connections{}.left.facets{}.number as sourcenumber
+connections{}.right.facets{}.country as destinationcountry
+connections{}.right.facets{}.number as destinationnumber
+resourceId as routername
+| table 
+_time 
+guid
+timestamp  
+direction
+routername 
+calltype
+sourcenumber
+sourcecountry
+destinationnumber
+destinationcountry
+policyrule
+disposition
+| sort _time
