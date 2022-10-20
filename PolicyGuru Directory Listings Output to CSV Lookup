@@ -12,4 +12,6 @@ GROUP BY number
 "
 shortnames=t
 | table number lists
+| mvcombine delim="," lists
+| nomv lists
 | outputlookup pg_directory_listings.csv
