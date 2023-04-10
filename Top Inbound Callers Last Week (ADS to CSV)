@@ -1,0 +1,12 @@
+index="policyguru_data" resourceId="enum*" NOT disposition.disposition="*"
+| rex field=meta "direction(?<place_holder>.)(?<direction>.*)"
+| search direction="INBOUND"
+| lookup pg_directory_listings.csv number AS "connections{}.left.facets{}.number" OUTPUT lists
+| fillnull value="No List Match" lists
+| search lists != "*Whitelist*"
+| rename connections{}.left.facets{}.number as sourcenumber
+| eval sourcenumber=mvdedup(sourcenumber)
+| table guid sourcenumber destinationnumber
+| stats count as total_calls by sourcenumber
+| search total_calls  > 50
+| outputlookup top_callers_last_week.csv
