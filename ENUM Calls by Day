@@ -1,0 +1,2 @@
+index="policyguru_data" resourceId="enum*" NOT disposition.disposition="*" meta=*
+| timechart span=1d count by meta
