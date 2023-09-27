@@ -1,0 +1,10 @@
+index="policyguru_data" resourceId="sip*" ("CONNECTED" OR "ENDED")
+| eval status=if(searchmatch("CONNECTED"),"CONNECTED","ENDED")
+| stats 
+   dc(status) AS status_count
+   values(status) AS status 
+   values(meta) AS meta 
+   last(timestamp) AS timestamp 
+   BY guid
+| where status_count=1 AND status="CONNECTED"
+| stats count
