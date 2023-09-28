@@ -8,3 +8,17 @@ index="policyguru_data" resourceId="sip*" ("CONNECTED" OR "ENDED")
    BY guid
 | where status_count=1 AND status="CONNECTED"
 | stats count
+| rename count as "flowconnect_calls_with_no_flowend"
+| append
+[
+search index="policyguru_data" resourceId="sip*" "STARTED" NOT disposition.disposition="*" earliest=-15m
+| eval timestampStr_text = strftime(timestamp/1000, "%Y-%m-%d %H:%M:%S")
+| stats count by timestampStr_text
+| sort -count timestampStr_text
+| head 1
+| table count
+| rename count as max_cps
+]
+| stats values
+| rename values(flowconnect_calls_with_no_flowend) as flowconnect_calls_with_no_flowend values(max_cps) as max_cps
+| eval app="ads"
