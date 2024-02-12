@@ -1,23 +1,26 @@
-index="policyguru_data" resourceId="enum*" 
-| stats values(*) as * by guid
+
+index="policyguru_data" resourceId="enum*"
+| stats
+values("connections{}.left.facets{}.number") as sourcenumber
+values("connections{}.left.facets{}.country") as sourcecountry
+values("connections{}.right.facets{}.number") as destinationnumber
+values("connections{}.right.facets{}.country") as destinationcountry
+values("meta") as meta
+values("id") as policyrule
+values("modalities{}.modality") as calltype
+values("resourceId") as routername
+values("disposition.disposition") as disposition
+values("timestamp") as timestamp
+by guid
 | rex field=meta "direction:(?<direction>.*)"
-| search direction="INBOUND"
 | eval timestamp = mvindex(timestamp, 0)
 | eval _time=(timestamp/1000)
-| rename disposition.disposition as disposition 
-id as policyrule 
-modalities{}.modality as calltype 
-connections{}.left.facets{}.country as sourcecountry
-connections{}.left.facets{}.number as sourcenumber
-connections{}.right.facets{}.country as destinationcountry
-connections{}.right.facets{}.number as destinationnumber
-resourceId as routername
-| table 
-_time 
+| table
+_time
 guid
-timestamp  
+timestamp 
 direction
-routername 
+routername
 calltype
 sourcenumber
 sourcecountry
