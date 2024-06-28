@@ -1,10 +1,11 @@
+
 index="policyguru_data" resourceId="sip*" ("CONNECTED" OR "ENDED")
 | eval status=if(searchmatch("CONNECTED"),"CONNECTED","ENDED")
-| stats 
+| stats
    dc(status) AS status_count
-   values(status) AS status 
-   values(meta) AS meta 
-   last(timestamp) AS timestamp 
+   values(status) AS status
+   values(meta) AS meta
+   last(timestamp) AS timestamp
    BY guid
 | where status_count=1 AND status="CONNECTED"
 | stats count
@@ -17,8 +18,18 @@ search index="policyguru_data" resourceId="sip*" "STARTED" NOT disposition.dispo
 | sort -count timestampStr_text
 | head 1
 | table count
-| rename count as max_cps
+| rename count as max_cps_sip
+]
+| append
+[
+search index="policyguru_data" resourceId="enum*" NOT disposition.disposition="*" earliest=-15m
+| eval timestampStr_text = strftime(timestamp/1000, "%Y-%m-%d %H:%M:%S")
+| stats count by timestampStr_text
+| sort -count timestampStr_text
+| head 1
+| table count
+| rename count as max_cps_enum
 ]
 | stats values
-| rename values(flowconnect_calls_with_no_flowend) as flowconnect_calls_with_no_flowend values(max_cps) as max_cps
+| rename values(flowconnect_calls_with_no_flowend) as flowconnect_calls_with_no_flowend values(max_cps_sip) as max_cps_sip values(max_cps_enum) as max_cps_enum
 | eval app="ads"
